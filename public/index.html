@@ -1,0 +1,56 @@
+<html>
+    <body>
+        Enter a number
+        <input id="number" type="number" />
+        <button onclick="enterNumber()">Submit</button>
+        <br>
+        <div id="history" />
+        <script>
+            getHistory();
+
+            function getHistory() {
+                url = "/history";
+                xhr = new XMLHttpRequest();
+                xhr.open("GET", url);
+
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    let data = JSON.parse(xhr.responseText).data;
+                    let response = 'Numbers entered so far: ';
+                    let numbers = [];
+                    for (let i = 0; i < data.length; i++) {
+                        numbers.push(data[i].val);
+                    }
+                    response += numbers.join(',');
+                    document.getElementById("history").innerHTML = response;
+                }};
+
+                xhr.send();
+            }
+
+            function enterNumber() {
+                let val = document.getElementById('number');
+                var url = "/new";
+                var xhr = new XMLHttpRequest();
+                xhr.open("POST", url);
+
+                xhr.setRequestHeader("Accept", "application/json");
+                xhr.setRequestHeader("Content-Type", "application/json");
+
+                xhr.onreadystatechange = function () {
+                if (xhr.readyState === 4) {
+                    console.log(xhr.status);
+                    console.log(xhr.responseText);
+                    getHistory();
+                }};
+
+                var data = { val: Math.round(val.value) };
+
+                xhr.send(JSON.stringify(data));
+            }
+        </script>
+    </body>
+</html>
